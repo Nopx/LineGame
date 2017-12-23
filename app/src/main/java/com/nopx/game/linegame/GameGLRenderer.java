@@ -2,8 +2,10 @@ package com.nopx.game.linegame;
 
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
+import android.opengl.Matrix;
+import android.util.Log;
 
-import com.nopx.game.linegame.shapes.Circle;
+import com.nopx.game.linegame.shapes.Square;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -14,58 +16,70 @@ import javax.microedition.khronos.opengles.GL10;
 
 public class GameGLRenderer implements GLSurfaceView.Renderer{
 
-    private Circle circle;
+    //Shapes
+    private Square square;
 
-    private final String vertexShaderCode =
-            "attribute vec4 vPosition;" +
-                    "void main() {" +
-                    "  gl_Position = vPosition;" +
-                    "}";
+    //Projection
+    private final float[] mMVPMatrixInverted = new float[16];
+    private final float[] mMVPMatrix = new float[16];
+    private final float[] mProjectionMatrix = new float[16];
+    private final float[] mViewMatrix = new float[16];
 
-    private final String fragmentShaderCode =
-            "precision mediump float;" +
-                    "uniform vec4 vColor;" +
-                    "void main() {" +
-                    "  gl_FragColor = vColor;" +
-                    "}";
-
-    private int vertexShader;
-    private int fragmentShader;
-    private int program;
+    float xTouch=0;
+    float yTouch=0;
+    float xTouchFactor=1f;
+    float yTouchFactor=1f;
+    float zTouch=-3f; //also eyeZ
+    int width=1;
+    int height=1;
 
     @Override
     public void onSurfaceCreated(GL10 unused, EGLConfig eglConfig) {
         GLES20.glClearColor(0f,0f,0f,1f);
-        circle = new Circle(30);
-        vertexShader=loadShader(GLES20.GL_VERTEX_SHADER,vertexShaderCode);
-        fragmentShader=loadShader(GLES20.GL_FRAGMENT_SHADER,fragmentShaderCode);
-        program = GLES20.glCreateProgram();
-        GLES20.glAttachShader(program,vertexShader);
-        GLES20.glAttachShader(program,fragmentShader);
-        GLES20.glLinkProgram(program);
+        square = new Square(0f,0f,0.1f,0.1f);
     }
 
     @Override
     public void onSurfaceChanged(GL10 unused, int width, int height) {
         GLES20.glViewport(0, 0, width, height);
+        GLES20.glViewport(0, 0, width, height);
+
+        this.width=width;
+        this.height=height;
+
+        float ratio = (float) width / height;
+
+        //Matrix is adapted here and applied in onDrawFrame()
+        Matrix.frustumM(mProjectionMatrix, 0, -ratio, ratio, -1, 1, 3, 7);
+
+        // Set the camera position (View matrix)
+        Matrix.setLookAtM(mViewMatrix, 0, 0, 0, zTouch, 0f, 0f, 0f, 0f, 1.0f, 0.0f);
+
+        // Calculate the projection and view transformation
+        Matrix.multiplyMM(mMVPMatrix, 0, mProjectionMatrix, 0, mViewMatrix, 0);
+
+        Matrix.invertM(mMVPMatrixInverted,0,mMVPMatrix,0);
     }
 
     @Override
-    public void onDrawFrame(GL10 unused) {
+    public void onDrawFrame(GL10 gl) {
+        float[] squareMoveMatrix=new float[16];
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
+
+        Matrix.translateM(squareMoveMatrix,0,mMVPMatrix,0,xTouch,yTouch,0);
+
+        Log.i("DRAWFRAME","WORKING "+xTouch+" "+yTouch);
+
+        // Draw shape
+        square.draw(squareMoveMatrix);
     }
 
-    public static int loadShader(int type, String shaderCode){
 
-        // create a vertex shader type (GLES20.GL_VERTEX_SHADER)
-        // or a fragment shader type (GLES20.GL_FRAGMENT_SHADER)
-        int shader = GLES20.glCreateShader(type);
-
-        // add the source code to the shader and compile it
-        GLES20.glShaderSource(shader, shaderCode);
-        GLES20.glCompileShader(shader);
-
-        return shader;
+    public void setTouchCoords(float x, float y){
+       float[] vec=new float[]{-x,y,0f,1f};
+       Matrix.multiplyMV(vec,0,mMVPMatrixInverted,0,vec,0);
+       this.xTouch=vec[0];
+       this.yTouch=vec[1];
     }
 
 }
