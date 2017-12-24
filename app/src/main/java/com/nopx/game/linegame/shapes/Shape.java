@@ -1,6 +1,7 @@
 package com.nopx.game.linegame.shapes;
 
 import android.opengl.GLES20;
+import android.util.Log;
 
 import java.nio.FloatBuffer;
 import java.nio.ShortBuffer;
@@ -64,6 +65,11 @@ public class Shape{
     public void draw(float[] mvpMatrix){
         // Add program to OpenGL ES environment
         GLES20.glUseProgram(program);
+
+
+        String matrixStr="";
+        for(float el:mvpMatrix)matrixStr+=""+el+", ";
+        Log.i("Project123",matrixStr);
 
         // get handle to vertex shader's vPosition member
         int positionHandle = GLES20.glGetAttribLocation(program, "vPosition");

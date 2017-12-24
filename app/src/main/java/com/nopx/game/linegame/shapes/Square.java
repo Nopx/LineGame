@@ -30,10 +30,10 @@ public class Square extends Shape {
 
         // Create a buffer for vertex data
         this.buffer = new float[]{
-                x-xOffset,y-yOffset,1f,
-                x+xOffset,y-yOffset,1f,
-                x+xOffset,y+yOffset,1f,
-                x-xOffset,y+yOffset,1f};
+                x-xOffset,y-yOffset,0f,
+                x+xOffset,y-yOffset,0f,
+                x+xOffset,y+yOffset,0f,
+                x-xOffset,y+yOffset,0f};
         drawOrder = new short[]{0,1,2,0,2,3};
 
         //initialize vertexBuffer

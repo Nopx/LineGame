@@ -68,18 +68,18 @@ public class GameGLRenderer implements GLSurfaceView.Renderer{
 
         Matrix.translateM(squareMoveMatrix,0,mMVPMatrix,0,xTouch,yTouch,0);
 
-        Log.i("DRAWFRAME","WORKING "+xTouch+" "+yTouch);
-
+        Log.i("DRAWFRAME","WORKING "+xTouch+" "+yTouch+" -- "+width+" "+height);
         // Draw shape
         square.draw(squareMoveMatrix);
     }
 
 
     public void setTouchCoords(float x, float y){
-       float[] vec=new float[]{-x,y,0f,1f};
+       float[] vec=new float[]{x,-y,0f,1f};
        Matrix.multiplyMV(vec,0,mMVPMatrixInverted,0,vec,0);
-       this.xTouch=vec[0];
-       this.yTouch=vec[1];
+       //Times inverted MVPMatrix and then times 3, God knows why
+       this.xTouch=vec[0]*3;
+       this.yTouch=vec[1]*3;
     }
 
 }
