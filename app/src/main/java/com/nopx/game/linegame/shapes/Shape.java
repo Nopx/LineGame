@@ -63,13 +63,13 @@ public class Shape{
     }
 
     public void draw(float[] mvpMatrix){
+        actualDraw(mvpMatrix);
+    }
+
+    protected void actualDraw(float[] mvpMatrix){
+
         // Add program to OpenGL ES environment
         GLES20.glUseProgram(program);
-
-
-        String matrixStr="";
-        for(float el:mvpMatrix)matrixStr+=""+el+", ";
-        Log.i("Project123",matrixStr);
 
         // get handle to vertex shader's vPosition member
         int positionHandle = GLES20.glGetAttribLocation(program, "vPosition");

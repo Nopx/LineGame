@@ -18,16 +18,25 @@ import static java.lang.Math.sin;
 public class Square extends Shape {
 
 
+    protected float centerX;
+    protected float centerY;
+    protected float width;
+    protected float height;
 
-    public Square(float x, float y, float w, float h){
+    public Square(float x, float y, float w, float h, float[] color){
         super();
+        this.color = color;
+        this.width=w;
+        this.height=h;
+        this.centerX=x;
+        this.centerY=y;
+        setSize(x,y,w,h);
+    }
 
-
-        color = new float[]{ 0.63671875f, 0.76953125f, 0.22265625f, 1.0f };
+    public void setSize(float x, float y, float w, float h){
 
         float xOffset=w/2;
         float yOffset=h/2;
-
         // Create a buffer for vertex data
         this.buffer = new float[]{
                 x-xOffset,y-yOffset,0f,
@@ -52,5 +61,12 @@ public class Square extends Shape {
         drawListBuffer.position(0);
     }
 
+    public float getCenterX() {
+        return centerX;
+    }
+
+    public float getCenterY() {
+        return centerY;
+    }
 
 }
