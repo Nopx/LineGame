@@ -26,14 +26,21 @@ public class GameGLView extends GLSurfaceView {
     @Override
     public boolean onTouchEvent(MotionEvent e) {
         //TODO fix touch position
-        float x= (e.getX()-getWidth()/2)/(getWidth()/2);
-        float y= (e.getY()-getHeight()/2)/(getHeight()/2);
+        float x= -(e.getX()-getWidth()/2)/(getWidth()/2);
+        float y= -(e.getY()-getHeight()/2)/(getHeight()/2);
         switch (e.getAction()) {
             case MotionEvent.ACTION_MOVE:
+                gameRenderer.setTouchCoords(x,y);
+                gameRenderer.whileTouch(x,y);
+                break;
             case MotionEvent.ACTION_DOWN:
                 gameRenderer.setTouchCoords(x,y);
-                requestRender();
+                gameRenderer.onTouch(x,y);
+                break;
+            case MotionEvent.ACTION_UP:
+                gameRenderer.onRelease(x,y);
         }
+        requestRender();
         return true;
     }
 

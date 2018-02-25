@@ -15,7 +15,9 @@ public class Diamond extends Square {
     @Override
     public void draw(float[] mvpMatrix){
         float[] newMVPMatrix=new float[mvpMatrix.length];
-        Matrix.rotateM(newMVPMatrix,0,mvpMatrix,0,45f,0,0,-1.0f);
+        Matrix.translateM(newMVPMatrix,0,mvpMatrix,0,centerX,centerY,0);
+        Matrix.rotateM(newMVPMatrix,0,newMVPMatrix,0,45f,0,0,-1.0f);
+        Matrix.translateM(newMVPMatrix,0,newMVPMatrix,0,-centerX,-centerY,0);
         actualDraw(newMVPMatrix);
     }
 }

@@ -10,7 +10,6 @@ public class Shape{
     int COORDS_PER_VERTEX=3;
     int vertexStride = COORDS_PER_VERTEX * 4;
 
-
     float[] color;
     private int vertexShader;
     private int fragmentShader;
@@ -40,6 +39,10 @@ public class Shape{
                     "}";
 
     public Shape(){
+        setupProgram();
+    }
+
+    private void setupProgram(){
         vertexShader=loadShader(GLES20.GL_VERTEX_SHADER,vertexShaderCode);
         fragmentShader=loadShader(GLES20.GL_FRAGMENT_SHADER,fragmentShaderCode);
         program = GLES20.glCreateProgram();
@@ -67,6 +70,11 @@ public class Shape{
     }
 
     protected void actualDraw(float[] mvpMatrix){
+
+        if(program==0){
+            //fixed weird issue where program was 0 sometimes
+            setupProgram();
+        }
 
         // Add program to OpenGL ES environment
         GLES20.glUseProgram(program);
@@ -102,5 +110,15 @@ public class Shape{
 
         // Disable vertex array
         GLES20.glDisableVertexAttribArray(colorHandle);
+    }
+
+    public float[] setColor(float[] newColor){
+        float[] colorsaver = color;
+        color=newColor;
+        return colorsaver;
+    }
+
+    public float[] getColor() {
+        return color;
     }
 }

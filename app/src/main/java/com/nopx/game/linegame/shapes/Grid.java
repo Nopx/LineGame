@@ -19,6 +19,7 @@ public class Grid extends Shape {
     private float separationFactor=50;
     private float xBound;
     private float yBound;
+    private float actualBound;
     private float width;
     private float height;
     private float[] color;
@@ -63,6 +64,7 @@ public class Grid extends Shape {
 
         xBound=width/2;
         yBound=height/2;
+        actualBound = Math.min(xBound,yBound);
 
         for(int y=0; y<cellsY;y++){
             for(int x=0;x<cellsX;x++){
@@ -89,7 +91,7 @@ public class Grid extends Shape {
             float centerYOverlayHorizontal=borderY+(i+1-cellsX)*cellWidth-height/2;
             gridOverlay[i]=new Square(centerXOverlayHorizontal,centerYOverlayHorizontal,cellsTogetherWidth,separation,color);
         }
-        lastHoveredCell=cells[(cellsY/2)*cellsX+(cellsX/2)];
+        //lastHoveredCell=cells[(cellsY/2)*cellsX+(cellsX/2)];
         cells[(cellsY/2)*cellsX+(cellsX/2)].highlight();
     }
 
@@ -98,12 +100,10 @@ public class Grid extends Shape {
         bg.draw(mvpMatrix);
         for(Square cell:cells){
             cell.draw(mvpMatrix);
-        }/*
-        for(Square overlay:gridOverlay){
-            overlay.draw(mvpMatrix);
-        }*/
+        }
     }
 
+    //DEPRECATED
     public void highlightNewCell(float x, float y){
         try {
             if (isOnGrid(x, y)) {
@@ -133,12 +133,24 @@ public class Grid extends Shape {
     }
 
     private Cell coordToCell(float x, float y){
-        float calcXF = x<0?x+width+Math.abs(borderX):x;
-        float calcYF = y<0?y+height+Math.abs(borderY):y;
-        int calcX=(int)Math.floor((calcXF-borderX)/cellWidth);
-        int calcY=(int)Math.floor((calcYF-borderY)/cellWidth);
+        float calcXF = x-xTopRight-borderX;
+        float calcYF = y-yBottomLeft-borderY;
+        int calcX=(int)Math.floor((calcXF)/cellWidth);
+        int calcY=(int)Math.floor((calcYF)/cellWidth);
         //return cells[0];
         return cells[calcY*cellsX+calcX];
+    }
+
+    public int[] coordsToCellCoord(float x, float y){
+        float calcXF = Math.abs(-x-actualBound);
+        float calcYF = Math.abs(-y-actualBound);
+        int calcX=(int)Math.floor((calcXF)/cellWidth);
+        int calcY=(int)Math.floor((calcYF)/cellWidth);
+        return new int[]{calcX,calcY};
+    }
+
+    public float[] cellCoordToCoord(int x, int y){
+        return new float[]{cells[y*cellsX+x].getCenterX(),cells[y*cellsX+x].getCenterY()};
     }
 
 }

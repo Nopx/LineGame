@@ -35,6 +35,10 @@ public class Square extends Shape {
 
     public void setSize(float x, float y, float w, float h){
 
+        this.centerX=x;
+        this.centerY=y;
+        this.width=w;
+        this.height=h;
         float xOffset=w/2;
         float yOffset=h/2;
         // Create a buffer for vertex data
@@ -59,6 +63,12 @@ public class Square extends Shape {
         drawListBuffer = dlb.asShortBuffer();
         drawListBuffer.put(drawOrder);
         drawListBuffer.position(0);
+    }
+
+    public boolean isCoordinatesInSquare(float x, float y){
+        float xBound=width/2;
+        float yBound=height/2;
+        return x<=centerX+xBound&&x>=centerX-xBound && y<=centerY+yBound&&y>=centerY-yBound;
     }
 
     public float getCenterX() {

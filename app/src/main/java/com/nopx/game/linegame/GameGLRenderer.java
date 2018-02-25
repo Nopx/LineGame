@@ -20,8 +20,8 @@ public class GameGLRenderer implements GLSurfaceView.Renderer{
 
     //Shapes
     private int actorCount=4;
-    private Diamond[] actors=new Diamond[actorCount];
-    private Grid[] grids=new Grid[actorCount];
+    private Diamond actor;
+    private Grid grid;
     private float[][] centerVecs=new float[actorCount][2];
 
     //Projection
@@ -38,9 +38,14 @@ public class GameGLRenderer implements GLSurfaceView.Renderer{
     int width=1;
     int height=1;
 
+    Game game;
+
     @Override
     public void onSurfaceCreated(GL10 unused, EGLConfig eglConfig) {
         GLES20.glClearColor(0f,0f,0f,1f);
+        //TODO start game loop?
+        Log.i("KASJHDJKASHD","WORKS");
+        game = new Game(this,"250,250,50;250,50,50;50,250,50;50,50,250;150,80,80;250,150,10;90,10,200");
     }
 
     @Override
@@ -66,29 +71,13 @@ public class GameGLRenderer implements GLSurfaceView.Renderer{
         // Calculate inverse View Projection Matrix to get screen coords to world coords
         Matrix.invertM(mMVPMatrixInverted,0,mMVPMatrix,0);
 
-        float[] boundVec=vecToWorld(new float[]{1,1,0,1});
-        /*
-        grids[0] = new Grid(0,boundVec[1],boundVec[0],0,0.1f,3,
-                5,0.05f,new float[]{ 0f, 0f, 0f, 1.0f },
-                new float[]{ 1f, 1f, 1f, 1.0f });
+        /*float[] boundVec=vecToWorld(new float[]{1,1,0,1});
+        grid= new Grid(-boundVec[0],boundVec[1],boundVec[0],-boundVec[1],0.1f,3,
+                5,0.05f,new float[]{ 1f, 0f, 0f, 1.0f },
+                new float[]{ 1f, 1f, 0f, 1.0f });
+        actor=new Diamond(0f,0f,0.1f,0.1f, new float[]{ 0.63671875f, 0.76953125f, 0.22265625f, 1.0f });*/
+        game.setNewLevel("4,4;0,0,1,2;2,1,0,3");
 
-        grids[1] = new Grid(-boundVec[0],boundVec[1],0,0,0.1f,3,
-                5,0.05f,new float[]{ 0f, 0f, 0f, 1.0f },
-                new float[]{ 1f, 1f, 1f, 1.0f });
-
-        grids[2] = new Grid(0,0,boundVec[0],-boundVec[1],0.1f,3,
-                5,0.05f,new float[]{ 0f, 0f, 0f, 1.0f },
-                new float[]{ 1f, 1f, 1f, 1.0f });
-
-        grids[3] = new Grid(-boundVec[0],0,0,-boundVec[1],0.1f,3,
-                5,0.05f,new float[]{ 0f, 0f, 0f, 1.0f },
-                new float[]{ 1f, 1f, 1f, 1.0f });
-
-        actors[0]=new Diamond(0f,0f,0.1f,0.1f, new float[]{ 0.63671875f, 0.76953125f, 0.22265625f, 1.0f });
-        actors[1]=new Diamond(0f,0f,0.1f,0.1f, new float[]{ 0.63671875f, 0.76953125f, 0.22265625f, 1.0f });
-        actors[2]=new Diamond(0f,0f,0.1f,0.1f, new float[]{ 0.63671875f, 0.76953125f, 0.22265625f, 1.0f });
-        actors[3]=new Diamond(0f,0f,0.1f,0.1f, new float[]{ 0.63671875f, 0.76953125f, 0.22265625f, 1.0f });
-        */
     }
 
     @Override
@@ -99,20 +88,29 @@ public class GameGLRenderer implements GLSurfaceView.Renderer{
 
         Matrix.translateM(squareMoveMatrix,0,mMVPMatrix,0,xTouch,yTouch,0);
 
-        //Adapt shapes
-        for(Grid g: grids){
-            g.highlightNewCell(xTouch,yTouch);
-        }
-
-        // Draw shapes
-        for(Grid g: grids){
-            g.draw(mMVPMatrix);
-        }
-        for(Diamond actor: actors){
-            actor.draw(mMVPMatrix);
-        }
+       /* actor.draw(mMVPMatrix);
+        grid.highlightNewCell(xTouch,yTouch);
+        grid.draw(mMVPMatrix);*/
+        game.draw(mMVPMatrix);
     }
 
+
+    private void update(){
+
+    }
+
+
+    public void onTouch(float xTouch, float yTouch){
+        game.onTouch(xTouch,yTouch);
+    }
+
+    public void whileTouch(float xTouch, float yTouch){
+        game.whileTouch(xTouch,yTouch);
+    }
+
+    public void onRelease(float xTouch, float yTouch){
+        game.onRelease(xTouch,yTouch);
+    }
 
     public void setTouchCoords(float x, float y){
        float[] vec=new float[]{x,-y,0f,1f};
